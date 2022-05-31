@@ -7,8 +7,12 @@ Created on Mon May 30 13:42:33 2022
 
 from os import chdir
 import streamlit as st
+import pandas as pd
+from sys import platform
 
-chdir('C:/Users/Aakas/Documents/School/CHBE_2250/')
+
+if platform == 'win32':
+    chdir('C:/Users/Aakas/Documents/School/CHBE_2250/')
 
 
 def equation_of_state(column):
@@ -56,16 +60,17 @@ def get_sup(x):
 
 def molecule(column):
     """
-    Allows a user to choose a molecule of interest from the list,
+    Allows a user to choose a molecule of interest from the list
 
     Returns critical parameters of relevance
     """
-    # TODO: get a complete list of the relevant molecules and associated
-    # critical pressure/temperature and accentric factors Currenrly for testing
+    constants_df = pd.read_csv('thermo_constants.csv')
+    options = list(constants_df['name'])
+
     with column:
         chosen_molecule = st.selectbox(
             'Choose a molecule of interest',
-            ('Custom', 'Water', 'Ethanol'))
+            (['Custom'] + options))
 
         st.write('If using custom values')
         cr_temp = st.number_input(f'T{get_sub("c")}')
@@ -74,8 +79,11 @@ def molecule(column):
 
         if chosen_molecule == 'Custom':
             return cr_temp, cr_pres, accen_fac
-
-        return chosen_molecule, 1, 1
+        else:
+            params = constants_df[constants_df['name'] == chosen_molecule]
+            return (float(params['critical_temp']),
+                    float(params['critical_pressure']),
+                    float(params['accentric_factor']))
 
 
 def conditions(column):
@@ -146,12 +154,13 @@ def main():
     cr_temp, cr_pres, accen_fac = molecule(right_column)
     temp, pres = conditions(left_column)
 
-    left_column.button('Calculate!')
-
     # Temporary setup to render accurately for now, need to add functionality
     # later
-    roots(right_column)
-    departure_fxn(left_column, depart_base, depart_units, depart_disp)
+    if left_column.button('Calculate!'):
+        roots(right_column)
+        departure_fxn(left_column, depart_base, depart_units, depart_disp)
+    else:
+        st.write('')
 
 
 if __name__ == '__main__':
