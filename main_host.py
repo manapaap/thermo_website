@@ -50,6 +50,9 @@ def get_sub(x):
 
 
 def get_sup(x):
+    """
+    Superscript function I stile from somewhere
+    """
     normal = ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv" +
               "wxyz0123456789+-=()")
     super_s = ("ᴬᴮᶜᴰᴱᶠᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣʸᶻᵃᵇᶜᵈᵉᶠᵍʰᶦʲᵏˡᵐⁿᵒᵖ۹ʳˢᵗᵘᵛ" +
