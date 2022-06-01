@@ -76,10 +76,18 @@ def process_solutions(solved_eos):
     liquid_depart = {}
     vapor_depart = {}
     roots = {}
-    liquid_depart, roots = pass_liquid_vals(solved_eos, liquid_depart, roots)
-    vapor_depart, roots = pass_vapor_vals(solved_eos, vapor_depart, roots)
-
-    departs = {'liquid': liquid_depart,
-               'vapor': vapor_depart}
+    departs = {}
+    # TODO: check if roots exist before this function is run
+    try:
+        liquid_depart, roots = pass_liquid_vals(solved_eos, liquid_depart,
+                                                roots)
+        departs['liquid'] = liquid_depart
+    except:
+        pass
+    try:
+        vapor_depart, roots = pass_vapor_vals(solved_eos, vapor_depart, roots)
+        departs['vapor'] = vapor_depart
+    except:
+        pass
 
     return departs, roots
