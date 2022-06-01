@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue May 31 17:32:54 2022
-
-@author: Aakas
+Uses the thermo module to solve equations of state and pass back calculated
+values to the website
 """
 
 import thermo.eos as eos
