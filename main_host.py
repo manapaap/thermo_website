@@ -188,7 +188,7 @@ def prev_vals(column, depart_units, depart_disp):
 
 def save_state(volume_roots, departs):
     """
-    Baby function to change status of previous run
+    Baby function to change status of previous run and save previous run state
     """
     st.session_state.status = True
     st.session_state.volumes = volume_roots
@@ -219,9 +219,8 @@ def main():
             roots(left_column, volume_roots)
             departure_fxn(left_column, departs, depart_units, depart_disp)
 
+            # Printing previous results using session state
             if st.session_state.status:
-                st.write(st.session_state.departs)
-                st.write(st.session_state.volumes)
                 prev_vals(right_column, depart_units, depart_disp)
                 st.session_state.status = False
 
