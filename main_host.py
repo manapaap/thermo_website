@@ -186,19 +186,20 @@ def prev_vals(column, depart_units, depart_disp):
     departure_fxn(column, st.session_state.departs, depart_units, depart_disp)
 
 
-def save_state():
+def save_state(volume_roots, departs):
     """
     Baby function to change status of previous run
     """
     st.session_state.status = True
+    st.session_state.volumes = volume_roots
+    st.session_state.departs = departs
 
 
 def main():
     if 'status' not in st.session_state:
-        if not st.session_state:
-            st.session_state.volumes = None
-            st.session_state.departs = None
-            st.session_state.status = False
+        st.session_state.volumes = None
+        st.session_state.departs = None
+        st.session_state.status = False
 
     depart_units, depart_base, depart_disp = base_vals()
 
@@ -219,11 +220,14 @@ def main():
             departure_fxn(left_column, departs, depart_units, depart_disp)
 
             if st.session_state.status:
+                st.write(st.session_state.departs)
+                st.write(st.session_state.volumes)
                 prev_vals(right_column, depart_units, depart_disp)
                 st.session_state.status = False
-                st.session_state.volumes = volume_roots
-                st.session_state.departs = departs
-            left_column.button('Save Run!', on_click=save_state)
+
+            left_column.button('Save Run!',
+                               on_click=save_state,
+                               args=(volume_roots, departs, ))
 
     else:
         st.write('')
