@@ -80,8 +80,8 @@ def molecule(column):
             (['Custom'] + options))
 
         st.write('If using custom values')
-        cr_temp = st.number_input(f'T{get_sub("c")} (K)')
-        cr_pres = st.number_input(f'P{get_sub("c")} (bar)')
+        cr_temp = st.number_input(f'T{get_sub("c")} (K)', step=1)
+        cr_pres = st.number_input(f'P{get_sub("c")} (bar)', step=1)
         accen_fac = st.number_input('ω')
 
         if chosen_molecule == 'Custom':
@@ -101,8 +101,8 @@ def conditions(column):
     """
     with column:
         st.write('Define a state of interest')
-        temp = st.number_input('Temperature (K)')
-        pres = st.number_input('Pressure (bar)')
+        temp = st.number_input('Temperature (K)', step=1)
+        pres = st.number_input('Pressure (bar)', step=1)
 
         return temp, pres
 
@@ -112,7 +112,7 @@ def roots(column, roots):
     Displays the roots of the cubic EOS, corresponding to volume
     """
     with column:
-        st.write('Roots to the cubic EOS')
+        st.subheader('Roots to the cubic EOS')
         for key, value in roots.items():
             st.write(f'{key.capitalize()} root:')
             st.write(f'v = {value:.8f} m{get_sup("3")} mol{get_sup("-1")}')
@@ -126,7 +126,7 @@ def departure_fxn(column, depart_vals, depart_units, depart_disp):
     """
     with column:
         for key, value in depart_vals.items():
-            st.write(f'{key.capitalize()} departure functions:')
+            st.subheader(f'{key.capitalize()} departure functions:')
             for important, worth in value.items():
                 st.write(f'{depart_disp[important]} = ' +
                          f'{worth:.4f} {depart_units[important]}')
@@ -160,8 +160,11 @@ def process_inputs(chosen_eos, cr_temp, cr_pres, accen_fac, temp, pres):
     Turns the various user inpute into a dictionary for easier passing and
     handling by thermo eos library. Also rescales pressure to pascals
     during the process for the same reason
+    Also checks if the inputs are valid. If not, prints an error message
     """
-    if (cr_temp or cr_pres or accen_fac or temp or pres) < 0:
+    items = [cr_temp, cr_pres, temp, pres]
+
+    if any([i <= 0 for i in items]) or (accen_fac) < 0:
         st.write('INVALID INPUTS: Please enter valid inputs')
         return False
 
@@ -173,11 +176,34 @@ def process_inputs(chosen_eos, cr_temp, cr_pres, accen_fac, temp, pres):
     return relevant_vals
 
 
+def prev_vals(column, depart_units, depart_disp):
+    """
+    Prints previous runs if they have been requested to be saved
+    """
+    with column:
+        st.header('Previous run:')
+    roots(column, st.session_state.volumes)
+    departure_fxn(column, st.session_state.departs, depart_units, depart_disp)
+
+
+def save_state():
+    """
+    Baby function to change status of previous run
+    """
+    st.session_state.status = True
+
+
 def main():
+    if 'status' not in st.session_state:
+        if not st.session_state:
+            st.session_state.volumes = None
+            st.session_state.departs = None
+            st.session_state.status = False
+
     depart_units, depart_base, depart_disp = base_vals()
 
     st.title("Aakash's Website for Solving Cubic Equations of State")
-    left_column, right_column, leftest_column = st.columns(3)
+    left_column, right_column = st.columns(2)
 
     chosen_eos = equation_of_state(left_column)
     cr_temp, cr_pres, accen_fac = molecule(right_column)
@@ -187,11 +213,18 @@ def main():
         relevant_vals = process_inputs(chosen_eos, cr_temp, cr_pres,
                                        accen_fac, temp, pres)
         if relevant_vals:
+            left_column.header('Results:')
             departs, volume_roots = solve_eos(chosen_eos, relevant_vals)
-            # right column
-            roots(leftest_column, volume_roots)
-            # left column
-            departure_fxn(leftest_column, departs, depart_units, depart_disp)
+            roots(left_column, volume_roots)
+            departure_fxn(left_column, departs, depart_units, depart_disp)
+
+            if st.session_state.status:
+                prev_vals(right_column, depart_units, depart_disp)
+                st.session_state.status = False
+                st.session_state.volumes = volume_roots
+                st.session_state.departs = departs
+            left_column.button('Save Run!', on_click=save_state)
+
     else:
         st.write('')
 
