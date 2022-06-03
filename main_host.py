@@ -80,8 +80,8 @@ def molecule(column):
             (['Custom'] + options))
 
         st.write('If using custom values')
-        cr_temp = st.number_input(f'T{get_sub("c")} (K)', step=1)
-        cr_pres = st.number_input(f'P{get_sub("c")} (bar)', step=1)
+        cr_temp = st.number_input(f'T{get_sub("c")} (K)', step=0.1)
+        cr_pres = st.number_input(f'P{get_sub("c")} (bar)', step=0.1)
         accen_fac = st.number_input('ω')
 
         if chosen_molecule == 'Custom':
@@ -101,8 +101,8 @@ def conditions(column):
     """
     with column:
         st.write('Define a state of interest')
-        temp = st.number_input('Temperature (K)', step=1)
-        pres = st.number_input('Pressure (bar)', step=1)
+        temp = st.number_input('Temperature (K)', step=0.1)
+        pres = st.number_input('Pressure (bar)', step=0.1)
 
         return temp, pres
 
