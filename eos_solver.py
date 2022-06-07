@@ -48,7 +48,7 @@ def compressibility(solved_eos, mode='v'):
     elif mode == 'l':
         volume = solved_eos.V_l
     else:
-        pass  # TODO: need to add capacity to check for the meaningless root
+        volume = middle_volume(solved_eos)
 
     compress = solved_eos.P * volume / (gas_constant * solved_eos.T)
 
@@ -94,7 +94,27 @@ def middle_volume(solved_eos):
     Determine if middle (meaningless) volume exists, and if it does,
     returns it
     """
-    pass
+    volumes = solved_eos.raw_volumes
+    try:
+        liq_vol = solved_eos.V_l
+        vap_vol = solved_eos.V_g
+    except AttributeError:
+        return False
+    for vol in volumes:
+        if (type(vol) is complex) or (vol <= 0.0):
+            return False
+        elif (vol != liq_vol) or (vol != vap_vol):
+            return vol
+
+
+def pass_meaningless_vals(solved_eos, third_root):
+    """
+    Passes the meaningless roots and compressibility in similar fashion to the
+    vapor/liquid functions
+    """
+    third_root['v'] = middle_volume(solved_eos)
+    third_root['z'] = compressibility(solved_eos, 'third')
+    return third_root
 
 
 def process_solutions(solved_eos):
@@ -102,7 +122,7 @@ def process_solutions(solved_eos):
     Processes the solutions of the EOS into a nice format for easy printing
     """
     liquid_depart, vapor_depart = {}, {}
-    liquid_roots, vapor_roots = {}, {}
+    liquid_roots, vapor_roots, third_roots = {}, {}, {}
     roots, departs = {}, {}
 
     try:
@@ -111,7 +131,7 @@ def process_solutions(solved_eos):
                                                        liquid_roots)
         departs['liquid'] = liquid_depart
         roots['liquid'] = liquid_roots
-    except:
+    except AttributeError:
         pass
     try:
         vapor_depart, vapor_roots = pass_vapor_vals(solved_eos,
@@ -119,7 +139,10 @@ def process_solutions(solved_eos):
                                                     vapor_roots)
         departs['vapor'] = vapor_depart
         roots['vapor'] = vapor_roots
-    except:
+    except AttributeError:
         pass
+    third_vol = middle_volume(solved_eos)
+    if third_vol:
+        roots['third'] = pass_meaningless_vals(solved_eos, third_roots)
 
     return departs, roots
