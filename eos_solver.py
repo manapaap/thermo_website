@@ -48,7 +48,7 @@ def compressibility(solved_eos, mode='v'):
     elif mode == 'l':
         volume = solved_eos.V_l
     else:
-        pass  # need to add capacity to check for the meaningless root
+        pass  # TODO: need to add capacity to check for the meaningless root
 
     compress = solved_eos.P * volume / (gas_constant * solved_eos.T)
 
@@ -63,6 +63,7 @@ def pass_liquid_vals(solved_eos, liquid_depart, liquid_roots):
     liquid_depart['Δhdep'] = solved_eos.H_dep_l
     liquid_depart['Δudep'] = solved_eos.U_dep_l
     liquid_depart['Δsdep'] = solved_eos.S_dep_l
+    liquid_depart['Δgdep'] = solved_eos.G_dep_l
     liquid_depart['φ'] = fugacity(solved_eos.G_dep_l, solved_eos.T)
 
     liquid_roots['v'] = solved_eos.V_l
@@ -79,12 +80,21 @@ def pass_vapor_vals(solved_eos, vapor_depart, vapor_roots):
     vapor_depart['Δhdep'] = solved_eos.H_dep_g
     vapor_depart['Δudep'] = solved_eos.U_dep_g
     vapor_depart['Δsdep'] = solved_eos.S_dep_g
+    vapor_depart['Δgdep'] = solved_eos.G_dep_g
     vapor_depart['φ'] = fugacity(solved_eos.G_dep_g, solved_eos.T)
 
     vapor_roots['v'] = solved_eos.V_g
     vapor_roots['z'] = compressibility(solved_eos, 'v')
 
     return vapor_depart, vapor_roots
+
+
+def middle_volume(solved_eos):
+    """
+    Determine if middle (meaningless) volume exists, and if it does,
+    returns it
+    """
+    pass
 
 
 def process_solutions(solved_eos):

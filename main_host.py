@@ -147,16 +147,14 @@ def base_vals():
     depart_disp = {'Δhdep': f'Δh{get_sup("dep")}',
                    'Δudep': f'Δu{get_sup("dep")}',
                    'Δsdep': f'Δs{get_sup("dep")}',
+                   'Δgdep': f'Δg{get_sup("dep")}',
                    'φ': 'φ'}
     depart_units = {'Δhdep': f'J mol{get_sup("-1")}',
                     'Δudep': f'J mol{get_sup("-1")}',
                     'Δsdep': f'J K{get_sup("-1")} mol{get_sup("-1")}',
+                    'Δgdep': f'J mol{get_sup("-1")}',
                     'φ': ''}
-    depart_base = {'Δhdep': '',
-                   'Δudep': '',
-                   'Δsdep': '',
-                   'φ': ''}
-    return depart_units, depart_base, depart_disp
+    return depart_units, depart_disp
 
 
 def process_inputs(chosen_eos, cr_temp, cr_pres, accen_fac, temp, pres):
@@ -206,7 +204,7 @@ def main():
         st.session_state.status = False
         st.session_state.criticals = [0.0, 0.0, 0.0]
 
-    depart_units, depart_base, depart_disp = base_vals()
+    depart_units, depart_disp = base_vals()
 
     st.title("Aakash's Website for Solving Cubic Equations of State")
     left_column, right_column = st.columns(2)
