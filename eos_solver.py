@@ -39,7 +39,23 @@ def fugacity(del_g_dep, temp):
     return np.exp(del_g_dep / (temp * gas_constant))
 
 
-def pass_liquid_vals(solved_eos, liquid_depart, roots):
+def compressibility(solved_eos, mode='v'):
+    """
+    Baby function to return compressability of state
+    """
+    if mode == 'v':
+        volume = solved_eos.V_g
+    elif mode == 'l':
+        volume = solved_eos.V_l
+    else:
+        pass  # need to add capacity to check for the meaningless root
+
+    compress = solved_eos.P * volume / (gas_constant * solved_eos.T)
+
+    return compress
+
+
+def pass_liquid_vals(solved_eos, liquid_depart, liquid_roots):
     """
     Does the manual work of taking the solved EOS and adding the
     calculated values to it couldn't think of a cleaner way to do it
@@ -49,12 +65,13 @@ def pass_liquid_vals(solved_eos, liquid_depart, roots):
     liquid_depart['Δsdep'] = solved_eos.S_dep_l
     liquid_depart['φ'] = fugacity(solved_eos.G_dep_l, solved_eos.T)
 
-    roots['liquid'] = solved_eos.V_l
+    liquid_roots['v'] = solved_eos.V_l
+    liquid_roots['z'] = compressibility(solved_eos, 'l')
 
-    return liquid_depart, roots
+    return liquid_depart, liquid_roots
 
 
-def pass_vapor_vals(solved_eos, vapor_depart, roots):
+def pass_vapor_vals(solved_eos, vapor_depart, vapor_roots):
     """
     Does the manual work of taking the solved EOS and adding the
     calculated values to it couldn't think of a cleaner way to do it
@@ -64,28 +81,34 @@ def pass_vapor_vals(solved_eos, vapor_depart, roots):
     vapor_depart['Δsdep'] = solved_eos.S_dep_g
     vapor_depart['φ'] = fugacity(solved_eos.G_dep_g, solved_eos.T)
 
-    roots['vapor'] = solved_eos.V_g
+    vapor_roots['v'] = solved_eos.V_g
+    vapor_roots['z'] = compressibility(solved_eos, 'v')
 
-    return vapor_depart, roots
+    return vapor_depart, vapor_roots
 
 
 def process_solutions(solved_eos):
     """
     Processes the solutions of the EOS into a nice format for easy printing
     """
-    liquid_depart = {}
-    vapor_depart = {}
-    roots = {}
-    departs = {}
+    liquid_depart, vapor_depart = {}, {}
+    liquid_roots, vapor_roots = {}, {}
+    roots, departs = {}, {}
+
     try:
-        liquid_depart, roots = pass_liquid_vals(solved_eos, liquid_depart,
-                                                roots)
+        liquid_depart, liquid_roots = pass_liquid_vals(solved_eos,
+                                                       liquid_depart,
+                                                       liquid_roots)
         departs['liquid'] = liquid_depart
+        roots['liquid'] = liquid_roots
     except:
         pass
     try:
-        vapor_depart, roots = pass_vapor_vals(solved_eos, vapor_depart, roots)
+        vapor_depart, vapor_roots = pass_vapor_vals(solved_eos,
+                                                    vapor_depart,
+                                                    vapor_roots)
         departs['vapor'] = vapor_depart
+        roots['vapor'] = vapor_roots
     except:
         pass
 

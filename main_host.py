@@ -28,13 +28,13 @@ def equation_of_state(column):
     with column:
         chosen_eos = st.radio(
             'Choose an Equation of State!',
-            ('van der Walls',
+            ('van der Waals',
              'Redlich-Kwong',
              'Soave-Redlich-Kwong',
              'Peng-Robinson'))
 
         matchup = {
-            'van der Walls': 'vdW',
+            'van der Waals': 'vdW',
             'Redlich-Kwong': 'RK',
             'Soave-Redlich-Kwong': 'SRK',
             'Peng-Robinson': 'PR'}
@@ -65,7 +65,7 @@ def get_sup(x):
     return x.translate(res)
 
 
-def molecule(column):
+def molecule(column, constants=[0, 0, 0]):
     """
     Allows a user to choose a molecule of interest from the list
 
@@ -80,9 +80,11 @@ def molecule(column):
             (['Custom'] + options))
 
         st.write('If using custom values')
-        cr_temp = st.number_input(f'T{get_sub("c")} (K)', step=0.1)
-        cr_pres = st.number_input(f'P{get_sub("c")} (bar)', step=0.1)
-        accen_fac = st.number_input('ω')
+        cr_temp = st.number_input(f'T{get_sub("c")} (K)',
+                                  step=0.1, value=constants[0])
+        cr_pres = st.number_input(f'P{get_sub("c")} (bar)',
+                                  step=0.1, value=constants[1])
+        accen_fac = st.number_input('ω', value=constants[2])
 
         if chosen_molecule == 'Custom':
             return cr_temp, cr_pres, accen_fac
@@ -114,8 +116,10 @@ def roots(column, roots):
     with column:
         st.subheader('Roots to the cubic EOS')
         for key, value in roots.items():
-            st.write(f'{key.capitalize()} root:')
-            st.write(f'v = {value:.8f} m{get_sup("3")} mol{get_sup("-1")}')
+            st.write(f'{key.capitalize()} root:\U00002800' +
+                     f'Z = {value["z"]:.5f}' +
+                     f'\U00002800  v = {value["v"]:.8f} m{get_sup("3")}' +
+                     f' mol{get_sup("-1")}')
 
 
 def departure_fxn(column, depart_vals, depart_units, depart_disp):
@@ -146,7 +150,7 @@ def base_vals():
                    'φ': 'φ'}
     depart_units = {'Δhdep': f'J mol{get_sup("-1")}',
                     'Δudep': f'J mol{get_sup("-1")}',
-                    'Δsdep': f'J mol{get_sup("-1")} K mol{get_sup("-1")}',
+                    'Δsdep': f'J K{get_sup("-1")} mol{get_sup("-1")}',
                     'φ': ''}
     depart_base = {'Δhdep': '',
                    'Δudep': '',
@@ -200,6 +204,7 @@ def main():
         st.session_state.volumes = None
         st.session_state.departs = None
         st.session_state.status = False
+        st.session_state.criticals = [0.0, 0.0, 0.0]
 
     depart_units, depart_base, depart_disp = base_vals()
 
@@ -207,7 +212,10 @@ def main():
     left_column, right_column = st.columns(2)
 
     chosen_eos = equation_of_state(left_column)
-    cr_temp, cr_pres, accen_fac = molecule(right_column)
+    cr_temp, cr_pres, accen_fac = molecule(right_column,
+                                           st.session_state.criticals)
+    # Set session state to hold critical values so the numeric input has them
+    st.session_state.criticals = [cr_temp, cr_pres, accen_fac]
     temp, pres = conditions(left_column)
 
     if left_column.button('Calculate!'):
