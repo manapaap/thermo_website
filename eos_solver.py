@@ -6,8 +6,6 @@ values to the website
 
 import thermo.eos as eos
 import numpy as np
-# TESTING MIDDLE ROOT
-import streamlit as st
 
 
 gas_constant = 8.31446  # J/mol K
@@ -144,8 +142,6 @@ def process_solutions(solved_eos):
     except AttributeError:
         pass
     third_vol = middle_volume(solved_eos)
-    st.write(third_vol)
-    # TESTING MIDDLE ROOT
     if third_vol:
         roots['third'] = pass_meaningless_vals(solved_eos, third_roots)
 
