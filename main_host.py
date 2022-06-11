@@ -131,9 +131,25 @@ def departure_fxn(column, depart_vals, depart_units, depart_disp):
     with column:
         for key, value in depart_vals.items():
             st.subheader(f'{key.capitalize()} departure functions:')
-            for important, worth in value.items():
-                st.write(f'{depart_disp[important]} = ' +
-                         f'{worth:.4f} {depart_units[important]}')
+            # Ugly string formatting to fit print in limited space available
+            # Sorry to myself and/or future coders
+            st.write(f'{depart_disp["Δudep"]} = {value["Δudep"]:.2f}' +
+                     f'{depart_units["Δudep"]}\U00002800' +
+                     f'{depart_disp["Δhdep"]} = ' +
+                     f'{value["Δhdep"]:.2f} {depart_units["Δhdep"]}')
+            st.write(f'{depart_disp["Δsdep"]} = {value["Δudep"]:.2f}' +
+                     f'{depart_units["Δsdep"]}\U00002800' +
+                     f'{depart_disp["Δgdep"]} = ' +
+                     f'{value["Δgdep"]:.1f} {depart_units["Δhdep"]}')
+            st.write(f'{depart_disp["φ"]} = {value["φ"]:.4f}')
+
+            # =================================================================
+            #               Previous print implementation: retaining in
+            #               case want to fall back to it
+            #             for important, worth in value.items():
+            #                 st.write(f'{depart_disp[important]} = ' +
+            #                         f'{worth:.4f} {depart_units[important]}')
+            # =================================================================
 
 
 def base_vals():
