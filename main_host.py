@@ -137,7 +137,7 @@ def departure_fxn(column, depart_vals, depart_units, depart_disp):
                      f'{depart_units["Δudep"]}\U00002800' +
                      f'{depart_disp["Δhdep"]} = ' +
                      f'{value["Δhdep"]:.2f} {depart_units["Δhdep"]}')
-            st.write(f'{depart_disp["Δsdep"]} = {value["Δudep"]:.2f}' +
+            st.write(f'{depart_disp["Δsdep"]} = {value["Δsdep"]:.2f}' +
                      f'{depart_units["Δsdep"]}\U00002800' +
                      f'{depart_disp["Δgdep"]} = ' +
                      f'{value["Δgdep"]:.1f} {depart_units["Δhdep"]}')
