@@ -84,7 +84,7 @@ def molecule(column, constants=[0, 0, 0]):
                                   step=0.1, value=constants[0])
         cr_pres = st.number_input(f'P{get_sub("c")} (bar)',
                                   step=0.1, value=constants[1])
-        accen_fac = st.number_input('ω', value=constants[2], step=0.001)
+        accen_fac = st.number_input('ω', value=constants[2], format='.2%')
 
         if chosen_molecule == 'Custom':
             return cr_temp, cr_pres, accen_fac
