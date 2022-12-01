@@ -81,9 +81,9 @@ def molecule(column, constants=[0, 0, 0]):
 
         st.write('If using custom values')
         cr_temp = st.number_input(f'T{get_sub("c")} (K)',
-                                  step=0.1, value=constants[0])
+                                  step=0.1, value=constants[0], format='%.3f')
         cr_pres = st.number_input(f'P{get_sub("c")} (bar)',
-                                  step=0.1, value=constants[1])
+                                  step=0.1, value=constants[1], format='%.3f')
         accen_fac = st.number_input('ω', value=constants[2], format='%.3f')
 
         if chosen_molecule == 'Custom':
