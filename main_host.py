@@ -103,8 +103,8 @@ def conditions(column):
     """
     with column:
         st.write('Define a state of interest')
-        temp = st.number_input('Temperature (K)', step=0.1)
-        pres = st.number_input('Pressure (bar)', step=0.1)
+        temp = st.number_input('Temperature (K)', step=0.1, format='%.3f')
+        pres = st.number_input('Pressure (bar)', step=0.1, format='%.3f')
 
         return temp, pres
 
